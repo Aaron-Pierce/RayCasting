@@ -160,6 +160,18 @@ function mouseClicked() {
 
 let ws = [];
 
+function fn(){
+    alert("submit");
+}
+
+function change(e){
+    console.log(e)
+    // alert(e.value);
+    e.background = "#000";
+}
+
+let rayCount = 50;
+let rayWeight = 3;
 function draw() {
     frameRate(60);
     background(33);
@@ -168,7 +180,6 @@ function draw() {
     stroke(255);
     // ellipse(mouseX, mouseY, 5);
 
-    let rayCount = 50;
     let rayLength = 250;
     stroke(255);
     strokeWeight(3);
