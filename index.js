@@ -1,9 +1,11 @@
+let numFKeyPresses = 0;
 function setup() {
     createCanvas(window.innerWidth, window.innerHeight);
     background(33);
     document.body.addEventListener("keydown", function(e){
         if(e.keyCode === 70){
-            rayCount = ((rayCount >= 1000) ? ((rayCount >= 2000) ? (rayCount >= 5000 ? (200) : 5000) : 2000) : 1000);
+            let values = [200, 1000, 2000, 5000];
+            rayCount = values[++numFKeyPresses % values.length];
         }
     })
 }
