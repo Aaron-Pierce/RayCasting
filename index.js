@@ -166,12 +166,12 @@ function draw() {
     ellipseMode("CENTER");
 
     stroke(255);
-    ellipse(mouseX, mouseY, 5);
+    // ellipse(mouseX, mouseY, 5);
 
-    let rayCount = 250;
-    let rayLength = 100;
+    let rayCount = 50;
+    let rayLength = 250;
     stroke(255);
-    strokeWeight(1);
+    strokeWeight(3);
 
     let collidedLast = -1;
     let lastCollidedWall = [];
