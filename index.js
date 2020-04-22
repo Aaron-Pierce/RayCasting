@@ -1,6 +1,11 @@
 function setup() {
     createCanvas(window.innerWidth, window.innerHeight);
     background(33);
+    document.body.addEventListener("keydown", function(e){
+        if(e.keyCode === 70){
+            rayCount = ((rayCount >= 1000) ? ((rayCount >= 2000) ? (rayCount >= 5000 ? (200) : 5000) : 2000) : 1000);
+        }
+    })
 }
 
 function randX() {
@@ -50,32 +55,6 @@ Array.prototype.equals = function (arr2) {
         if (this[i] != arr2[i]) return false;
     }
     return true;
-}
-
-let mostRecentCollidedLine = [];
-
-function collides(x, y) {
-    let threshold = 5;
-    for (let w of walls) {
-        // console.log(w, ":");
-        let dy = (w[3] - w[1]) / length(w);
-        let dx = (w[2] - w[0]) / length(w);
-        // console.log(dy, dx, dy/dx, slopeOfWall(w));
-        // let yMultiple = Math.abs((y - w[1]) % dy) < 1;
-        // let yMultiple = false;
-        // let xMultiple = Math.abs((x - w[0]) % dx) < 1;
-        // console.log(yMultiple, xMultiple);
-        // let xMultiple = true;
-        // console.log(yMultiple, xMultiple);
-        // console.log(slopeOfWall(w) * (x - w[0]), (y-w[1]));
-        if (w[0] <= x && x <= w[2] && w[1] <= y && y <= w[3]) {
-            if (Math.abs(dy * (x - w[0]) - dx * (y - w[1])) < 1) {
-                mostRecentCollidedLine = w;
-                return true;
-            }
-        }
-    }
-    return false;
 }
 
 function pointOnLine(p1, v1) {
@@ -132,23 +111,14 @@ function vIntersect(v1, v2) {
 
 }
 
-function collidesLine(xm, ym, sm) {
-    for (let w of walls) {
-        let xAtIntersect = ((slopeOfWall(w) * w[0]) - (sm * xm) - w[1] + ym) / (slopeOfWall(w) - sm);
-        // console.log(xAtIntersect)
-        if (w[0] <= xAtIntersect && xAtIntersect <= w[2]) {
-            return xAtIntersect;
-        }
-    }
-    return null;
-}
-
 function withinBounds(x, y, bxl = 0, bxr = window.innerWidth, byl = 0, byr = window.innerHeight) {
     return bxl <= x && x <= bxr && byl <= y && y <= byr;
 }
 
 let building = [];
 
+
+let ws = [];
 function mouseClicked() {
     building.push(mouseX);
     building.push(mouseY);
@@ -158,7 +128,6 @@ function mouseClicked() {
     }
 }
 
-let ws = [];
 
 function fn(){
     alert("submit");
@@ -170,6 +139,8 @@ function change(e){
     e.background = "#000";
 }
 
+
+
 let rayCount = 50;
 let rayWeight = 3;
 function draw() {
@@ -180,7 +151,7 @@ function draw() {
     stroke(255);
     // ellipse(mouseX, mouseY, 5);
 
-    let rayLength = 250;
+    let rayLength = Math.max(window.innerWidth, window.innerHeight);
     stroke(255);
     strokeWeight(3);
 
@@ -192,8 +163,8 @@ function draw() {
         // console.log(theta);
         let xComponent = cos(theta);
         let yComponent = sin(theta);
-        let x = mouseX + xComponent * 2000;
-        let y = mouseY + yComponent * 2000;
+        let x = mouseX + xComponent * rayLength;
+        let y = mouseY + yComponent * rayLength;
 
 
         let minIntersection = Infinity;
