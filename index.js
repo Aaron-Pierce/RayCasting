@@ -155,27 +155,32 @@ function draw() {
     stroke(255);
     strokeWeight(3);
 
-    let collidedLast = -1;
-    let lastCollidedWall = [];
     for (let a = 0; a <= rayCount; a++) {
+         //this allows us to skip the first ray's drawing for the purposes of finding most significant 
+         //rays (rays at edges of walls), but we come back to it at index 360 % 360
         i = a % rayCount;
-        let theta = i * 2 * PI / rayCount;
-        // console.log(theta);
+
+        let theta = i * 2 * PI / rayCount; //compute how many degrees are between each ray to create a full circle
+
         let xComponent = cos(theta);
         let yComponent = sin(theta);
-        let x = mouseX + xComponent * rayLength;
+
+        //compute endpoint of ray
+        let x = mouseX + xComponent * rayLength; 
         let y = mouseY + yComponent * rayLength;
 
-
+        //initialise to huge value so that everything is smaller
         let minIntersection = Infinity;
-        let vI = [];
-        let vC = null;
-        let collided = false;
-        for (let w of walls) {
-            let itsct = vIntersect([mouseX, mouseY, x, y], w);
-            if (itsct != null) {
-                let dis = distance(mouseX, mouseY, itsct[0], itsct[1]);
-                if (dis < minIntersection) {
+        let vI = []; //point of intersection, vectorIntersection
+        let vC = null; //wall collided with, vectorCollided
+        for (let w of walls) { //we look at every wall for every vector
+            //calculate point of intersection
+            let itsct = vIntersect([mouseX, mouseY, x, y], w); 
+            if (itsct != null) { //if the intersection lies on either ray
+                let dis = distance(mouseX, mouseY, itsct[0], itsct[1]); //find the length of the ray just cast
+                if (dis < minIntersection) { //if it's the min length, we want that one.
+                    //there's a world where two walls are lined up, and a ray might "look" at the back before the front
+                    //effectively passing right through the nearer intersection, so we keep track of the minimum distanced intersection
                     minIntersection = dis;
                     vI = itsct;
                     vC = w;
@@ -183,34 +188,31 @@ function draw() {
             }
         }
 
-        if (a != 0) {
-            if (vI.length != 0) {
-                // if (vC != lastCollidedWall)
-                line(mouseX, mouseY, vI[0], vI[1]);
-                stroke(255, 255, 255);
+        
+        if (a != 0) { //skip the first vector so that our most significant calculations aren't messed up
+            if (vI.length != 0) { //if there was a collision
+                line(mouseX, mouseY, vI[0], vI[1]); //draw a line from mouse to collision point
+                stroke(255, 255, 255); //reset the color
             } else {
-                // if (vC != lastCollidedWall)
+                //if no collision, draw full length of ray
                 line(mouseX, mouseY, mouseX + xComponent * 2000, mouseY + yComponent * 2000)
                 stroke(255, 255, 255);
             }
         }
         stroke(255, 255, 255);
 
+        //set our last collided wall to either null,
+        //for no collision, or the wall we hit, so that
+        //if the next vector doesn't also have the same
+        //collision, we call it a most significant vector,
+        //one who changed from their neighbor
         lastCollidedWall = vC;
-        // if (withinBounds(x, y)) collided = true;
-        // // if(mouseY == y) console.log(collided != collidedLast, !lastCollidedWall.equals(mostRecentCollidedLine));
-        // if (a != 0 && (collided != collidedLast || !lastCollidedWall.equals(mostRecentCollidedLine))) {
-        //     stroke(100, 255, 100);
-        // } else {
-        //     stroke(100, 100, 100);
-        // }
-        // line(mouseX, mouseY, x, y);
-        // collidedLast = collided;
-        // lastCollidedWall = mostRecentCollidedLine;
     }
 
+    //reset the most recent line every frame, so it doesn't hold over
     mostRecentCollidedLine = [];
 
+    //draw the walls
     for (let w of walls) {
         stroke(255, 100, 100);
         strokeWeight(5);
